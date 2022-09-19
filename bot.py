@@ -1,15 +1,14 @@
 # bot.py
-import os
+import os, discord, random, time, threading
+from tracemalloc import start
 
-import discord
-import random
-from dotenv import load_dotenv
 
-load_dotenv()
 TOKEN = 'MTAyMDQ0ODU5MTM1NTA2MDI3NA.Gl-Oao.JT_RjWIiN0Vdm7N_MJhrwBpQf4tt3QBZe3i5qA'
-GUILD = '1020449801730531370'
+GUILD = '314124078657175553'
 
 client = discord.Client(intents=discord.Intents.all())
+
+threads = []
 
 @client.event
 async def on_ready():
@@ -32,16 +31,52 @@ async def on_message(message):
 #        return
 
     brooklyn_99_quotes = [
-        'I\'m the human form of the 💯 emoji.',
-        'Bingpot!',
-        (
-            'Cool. Cool cool cool cool cool cool cool, '
-            'no doubt no doubt no doubt no doubt.'
-        ),
+        'joppegay',
+        'simpogay'
     ]
 
-    if message.content == 'test!':
+    if message.content == 'gay generator':
         response = random.choice(brooklyn_99_quotes)
         await message.channel.send(response)
+
+@client.event
+async def on_voice_state_update(member, before, after):
+    channel = before.channel or after.channel
+
+    if after.channel is None: 
+        print(member.name + " left")
+        return
+
+    if channel.id == 1021484776407957577 or channel.id == 767412462017576990 or channel.id == 688792120907137071:
+        print(member.name + " joined")
+        startThread(member.name)
+
+
+def startThread(member):
+        counter = memberSecondCounter()
+        counter.name = member
+        counter.start()
+        threads.append(counter)
+
+class memberSecondCounter(threading.Thread):
+    def __init__(self):
+        threading.Thread.__init__(self)
+        self.alive = False
+        self.start = time.time()
+
+    def run(self):
+        self.alive = True
+        while self.alive:
+            time.sleep(1)
+
+    def finish(self):
+        end = time.time()
+        self.alive = False
+        return self.start - end
+        
+        
+
+for thread in threading.enumerate():
+    print(thread.getName)
 
 client.run(TOKEN)
