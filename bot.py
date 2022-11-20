@@ -1,82 +1,46 @@
 # bot.py
-import os, discord, random, time, threading
-from tracemalloc import start
+import discord, json
+from reddit import redditBot
+from table2ascii import table2ascii as t2a, PresetStyle
 
+TOKEN = 'MTA0MzkxMjMzNDIwNjMxNjU5NQ.GO3C8F.AcZRbnoL5A69iIeFtRyVZFmAJ1sOxu5VwOy5HM'
+CHANNEL_ID = '1021484821802930256'
 
-TOKEN = 'MTAyMDQ0ODU5MTM1NTA2MDI3NA.Gl-Oao.JT_RjWIiN0Vdm7N_MJhrwBpQf4tt3QBZe3i5qA'
-GUILD = '314124078657175553'
+intents = discord.Intents.default()
+#intents.bot = True
 
 client = discord.Client(intents=discord.Intents.all())
 
-threads = []
-
 @client.event
 async def on_ready():
-    for guild in client.guilds:
-        if guild.name == GUILD:
-            break
+    print('We have logged in as {0.user}'.format(client))
 
-    print(
-        f'{client.user} is connected to the following guild:\n'
-        f'{guild.name}(id: {guild.id})'
-    )
-
-    members = '\n - '.join([member.name for member in guild.members])
-    print(f'Guild Members:\n - {members}')
 
 @client.event
 async def on_message(message):
-    print(message.content, "sent")
-#    if message.author == client.user:
-#        return
+    if (str(message.channel) == 'bot-test-text'):
+        if (str(message.author) != str(client.user)):
+            channel = client.get_channel(int(CHANNEL_ID))
 
-    brooklyn_99_quotes = [
-        'joppegay',
-        'simpogay'
-    ]
+            reddit_data = json.loads(redditBot(message.content.split('!')[1]))
 
-    if message.content == 'gay generator':
-        response = random.choice(brooklyn_99_quotes)
-        await message.channel.send(response)
+            response = ''
+            response += 'TITLE:\n{}'.format(reddit_data['title'])
+            response += '\nUPVOTES: {}'.format(reddit_data['ups'])
+            
+            # In your command:
+            output = t2a(
+            header=["# Upvotes", "Comment"],
+            body=[
+            [reddit_data['top_comments'][0]['oneUps'], reddit_data['top_comments'][0]['one']], 
+            [reddit_data['top_comments'][0]['twoUps'], reddit_data['top_comments'][0]['two']], 
+            [reddit_data['top_comments'][0]['threeUps'], reddit_data['top_comments'][0]['three']],
+            [reddit_data['top_comments'][0]['fourUps'], reddit_data['top_comments'][0]['four']],
+            [reddit_data['top_comments'][0]['fiveUps'], reddit_data['top_comments'][0]['five']],
+            ],
+            style=PresetStyle.thin_compact
+            )
 
-@client.event
-async def on_voice_state_update(member, before, after):
-    channel = before.channel or after.channel
-
-    if after.channel is None: 
-        print(member.name + " left")
-        return
-
-    if channel.id == 1021484776407957577 or channel.id == 767412462017576990 or channel.id == 688792120907137071:
-        print(member.name + " joined")
-        startThread(member.name)
-
-
-def startThread(member):
-        counter = memberSecondCounter()
-        counter.name = member
-        counter.start()
-        threads.append(counter)
-
-class memberSecondCounter(threading.Thread):
-    def __init__(self):
-        threading.Thread.__init__(self)
-        self.alive = False
-        self.start = time.time()
-
-    def run(self):
-        self.alive = True
-        while self.alive:
-            time.sleep(1)
-
-    def finish(self):
-        end = time.time()
-        self.alive = False
-        return self.start - end
-        
-        
-
-for thread in threading.enumerate():
-    print(thread.getName)
-
+            await channel.send(output)
+            #await channel.send(response)
 client.run(TOKEN)
