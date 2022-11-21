@@ -1,13 +1,14 @@
 import praw, json
+from config import getProperty
 
 def redditBot(subreddit):
     reddit = praw.Reddit(
-        client_id="2TJn67NY9a7ty7vJMWtCzQ",
-        client_secret="QoyfQVVThcdHMOTGobntzPt1timhwA",
-        password="Xiqafc123Xiq",
-        user_agent="Test script by Oscar Norman",
-        username="Zlynan",
-        check_for_async=False
+        client_id = getProperty("client_id"),
+        client_secret = getProperty("client_secret"),
+        password = getProperty("password"),
+        user_agent = getProperty("user_agent"),
+        username = getProperty("username"),
+        check_for_async = getProperty("check_for_async")
     )
     print(reddit.user.me())
 

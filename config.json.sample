@@ -1,9 +1,6 @@
 {
-  //bot.py related config
   "TOKEN": "",
   "CHANNEL_ID": "",
-
-  //reddit.py related config
   "client_id": "",
   "client_secret": "",
   "password": "",
