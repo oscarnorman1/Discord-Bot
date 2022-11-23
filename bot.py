@@ -1,17 +1,19 @@
 # bot.py
 import discord, json
+
+import config
 from reddit import redditBot
-from config import getProperty
 
-
-TOKEN = getProperty("TOKEN")
-CHANNEL_ID = getProperty("CHANNEL_ID")
+TOKEN = config.getProperty("TOKEN")
+CHANNEL_ID = config.getProperty("CHANNEL_ID")
 
 client = discord.Client(intents=discord.Intents.all())
+
 
 @client.event
 async def on_ready():
     print('We have logged in as {0.user}'.format(client))
+
 
 @client.event
 async def on_message(message):
@@ -32,8 +34,8 @@ async def on_message(message):
             response += '#4 Upvotes: {} | {}\n\n'.format(reddit_data['fourUps'], reddit_data['four'])
             response += '#5 Upvotes: {} | {}\n\n'.format(reddit_data['fiveUps'], reddit_data['five'])
             response += '```'
-            
-            await channel.send(response)
+
+            print(await channel.send(response))
 
 
 client.run(TOKEN)

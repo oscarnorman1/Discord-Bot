@@ -1,14 +1,15 @@
-import praw, json
-from config import getProperty
+import json
+import praw
+import config
 
 def redditBot(subreddit):
     reddit = praw.Reddit(
-        client_id = getProperty("client_id"),
-        client_secret = getProperty("client_secret"),
-        password = getProperty("password"),
-        user_agent = getProperty("user_agent"),
-        username = getProperty("username"),
-        check_for_async = getProperty("check_for_async")
+        client_id=config.getProperty("client_id"),
+        client_secret=config.getProperty("client_secret"),
+        password=config.getProperty("password"),
+        user_agent=config.getProperty("user_agent"),
+        username=config.getProperty("username"),
+        check_for_async=config.getProperty("check_for_async")
     )
     print(reddit.user.me())
 
@@ -28,7 +29,7 @@ def redditBot(subreddit):
             bestSubmission = bestSubmission
             break
 
-    #print('Title: {}, Ups: {}, Downs: {}'.format(submission.title, submission.ups, submission.downs))
+    # print('Title: {}, Ups: {}, Downs: {}'.format(submission.title, submission.ups, submission.downs))
     title = bestSubmission.title
     ups = bestSubmission.ups
 
@@ -57,9 +58,7 @@ def redditBot(subreddit):
         'fiveUps': str(top_comments[4].score)
     }
 
-#    for top in top_comments:
-#        print('Comment: {}, Ups: {}'.format(top.body, top.ups))
+    #    for top in top_comments:
+    #        print('Comment: {}, Ups: {}'.format(top.body, top.ups))
 
     return json.dumps(values)
-
-
